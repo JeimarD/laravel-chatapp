@@ -1,13 +1,6 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
-import { onMounted } from 'vue';
-
-onMounted(async () => {
-  fetch('http://localhost:8000/api/user').then(res => {
-    console.log(res);
-  })
-})
 </script>
 
 <template>
