@@ -1,14 +1,15 @@
-import './assets/main.css'
+import "./index.css";
+import { createApp } from "vue";
+import { createPinia } from "pinia";
+import axios from "./axios"; // Importa tu instancia personalizada de Axios
+import App from "./App.vue";
+import router from "./router";
 
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
+const app = createApp(App);
 
-import App from './App.vue'
-import router from './router'
+app.use(createPinia());
+app.use(router);
 
-const app = createApp(App)
+app.config.globalProperties.$axios = axios; // Asigna la instancia personalizada de Axios a una propiedad global
 
-app.use(createPinia())
-app.use(router)
-
-app.mount('#app')
+app.mount("#app");
