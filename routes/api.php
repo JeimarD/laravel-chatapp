@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\SocialAuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,3 +22,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::post('login', [AuthController::class, 'login']);
 Route::post('register', [AuthController::class, 'register']);
+Route::get('/authorize/{provider}/redirect', [SocialAuthController::class, 'redirectToProvider'])->name('api.social.redirect');
+Route::get('/authorize/{provider}/callback', [SocialAuthController::class, 'handleProviderCallback'])->name('api.social.callback');
