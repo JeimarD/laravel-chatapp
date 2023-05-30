@@ -19,6 +19,11 @@ const router = createRouter({
             name: "login",
             component: () => import("../views/Auth/Login.vue"),
         },
+        {
+            path: "/authorize/:provider/callback",
+            name: "social-login",
+            component: () => import("../views/Auth/SocialLogin.vue"),
+        },
     ],
 });
 

@@ -10,12 +10,15 @@
                     <p class="text-lg mt-4">Login using social networks</p>
                 </div>
                 <div class="flex mt-2 justify-center">
-                    <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center"><i
-                            class="fa-brands fa-facebook-f" style="color: #ffffff;"></i></div>
-                    <div class="w-12 h-12 bg-red-500 rounded-full mx-2 flex items-center justify-center"><i
-                            class="fa-brands fa-google" style="color: #ffffff;"></i></div>
-                    <div class="w-12 h-12 bg-black rounded-full flex items-center justify-center"><i
-                            class="fa-brands fa-github" style="color: #ffffff;"></i></div>
+                    <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center cursor-pointer"><i
+                            class="fa-brands fa-facebook-f" style="color: #ffffff;"
+                            @click="handleSocialAuth('facebook')"></i></div>
+                    <div class="w-12 h-12 bg-red-500 rounded-full mx-2 flex items-center justify-center cursor-pointer"><i
+                            class="fa-brands fa-google" style="color: #ffffff;" @click="handleSocialAuth('google')"></i>
+                    </div>
+                    <div class="w-12 h-12 bg-black rounded-full flex items-center justify-center cursor-pointer"
+                        @click="handleSocialAuth('github')"><i class="fa-brands fa-github" style="color: #ffffff;"></i>
+                    </div>
                 </div>
                 <div class="px-32">
                     <div class="flex items-center mt-6">
@@ -81,10 +84,22 @@ const handleLogin = async () => {
         route.push('/');
 
         // Aquí puedes redirigir a la página principal u otra acción necesaria
-    } catch (error) {
-        // Manejar errores de la petición
+    } catch (err) {
+        console.log(err);
     }
 };
+
+const handleSocialAuth = async (provider: string) => {
+    try {
+        await axios.get(`/api/authorize/${provider}/redirect`).then((res) => {
+            if (res.data.url) {
+                window.location.href = res.data.url
+            }
+        })
+    } catch (err) {
+        console.log(err);
+    }
+}
 </script>
   
 <style scoped>

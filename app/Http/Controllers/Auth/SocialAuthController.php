@@ -14,7 +14,11 @@ class SocialAuthController extends Controller
 {
     public function redirectToProvider($driver)
     {
-        return Socialite::driver($driver)->stateless()->redirect();
+        $url = Socialite::driver($driver)->stateless()->redirect()->getTargetUrl();
+        return response()->json([
+            "Success" => true,
+            "url" => $url,
+        ]);
     }
 
     public function handleProviderCallback($provider)
@@ -22,7 +26,7 @@ class SocialAuthController extends Controller
         $user = Socialite::driver($provider)->stateless()->user();
 
         if (!$user->token) {
-            return response()->json(['Success' => "false", "Message" => 'Failed'], 500);
+            return response()->json(['Success' => false, "Message" => 'Failed'], 500);
         }
 
         $appUser = User::whereEmail($user->email)->first();
@@ -54,7 +58,7 @@ class SocialAuthController extends Controller
         $passportToken = $appUser->createToken('Auth token')->accessToken;
 
         return response()->json([
-            "Sucess" => true,
+            "Success" => true,
             "access_token" => $passportToken
         ]);
     }
