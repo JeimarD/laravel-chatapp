@@ -15,12 +15,13 @@
 </template>
 
 <script setup lang="ts">
-import { RouterLink, useRouter } from 'vue-router';
+import { RouterLink } from 'vue-router';
 import { useAuthStore } from '@/stores/AuthStore';
 import axios from 'axios';
 import { onMounted } from 'vue';
+import { useRouter } from "vue-router";
 
-const router = useRouter();
+const route = useRouter();
 
 const userStore = useAuthStore();
 
@@ -33,9 +34,9 @@ const getUser = async () => {
 const currentUser = () => userStore.user;
 
 const handleLogout = () => {
-  localStorage.removeItem('token');
   userStore.logout();
-  router.push('/');
+  route.push("/login");
+
 }
 
 onMounted(() => {
