@@ -4,6 +4,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\SocialAuthController;
+use App\Http\Controllers\ChatController;
+use App\Http\Controllers\MessageController;
+use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Broadcast;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,6 +22,14 @@ use App\Http\Controllers\Auth\SocialAuthController;
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
+});
+
+Broadcast::routes(['middleware' => ['auth:api']]);
+
+Route::group(['middleware' => ['auth:api']], function ($router) {
+    Route::post('chat/create', [ChatController::class, 'create'])->name('chat.create');
+    Route::get('/users', [UserController::class, 'index']);
+    Route::post('message/send', [MessageController::class, 'sent']);
 });
 
 Route::post('login', [AuthController::class, 'login']);

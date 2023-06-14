@@ -31,6 +31,19 @@ const router = createRouter({
             component: () => import("../views/Auth/SocialLogin.vue"),
             beforeEnter: guest,
         },
+        {
+            path: "/messages",
+            name: "messages",
+            component: () => import("../views/Chat.vue"),
+            beforeEnter: auth,
+        },
+        {
+            path: "/messages/:chatId",
+            name: "chatRoom",
+            component: () => import("../views/ChatRoom.vue"),
+            beforeEnter: auth,
+        },
+        
     ],
 });
 
