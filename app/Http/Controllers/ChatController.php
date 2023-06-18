@@ -44,4 +44,11 @@ class ChatController extends Controller
 
         return response()->json(['Success' => true, 'chatId' => $chat->id], 200);
     }
+
+    public function getMessages(Chat $chat)
+    {
+        $messages = $chat->messages()->with('user')->get();
+
+        return response()->json(['Success' => true, 'messages' => $messages], 200);
+    }
 }

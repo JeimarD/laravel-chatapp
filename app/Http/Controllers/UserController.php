@@ -9,7 +9,7 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::with('messages')->get();
+        $users = User::paginate(10);
         return response()->json(["Success" => true, 'users' => $users], 200);
     }
 }

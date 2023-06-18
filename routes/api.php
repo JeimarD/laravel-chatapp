@@ -30,6 +30,7 @@ Route::group(['middleware' => ['auth:api']], function ($router) {
     Route::post('chat/create', [ChatController::class, 'create'])->name('chat.create');
     Route::get('/users', [UserController::class, 'index']);
     Route::post('message/send', [MessageController::class, 'sent']);
+    Route::get('chat/{chat}/get-messages', [ChatController::class, 'getMessages']);
 });
 
 Route::post('login', [AuthController::class, 'login']);

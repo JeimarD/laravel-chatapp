@@ -1,34 +1,58 @@
 <template>
     <div>
-        <h2 class="p-4 bg-gray-300 text-lg">{{ props.user.name }}</h2>
-        <div class="p-4 bg-white h-80 overflow-y-auto">
-            <div v-for="message in props.user.messages" :key="message.id">
-                <div v-if="message.from === 'user'" class="flex flex-row-reverse items-center mb-2">
-                    <img src="user-avatar.png" alt="User Avatar" class="w-8 h-8 rounded-full mr-2" />
-                    <span class="bg-blue-500 text-white p-2 rounded-lg">{{ message.content }}</span>
+        <h2 class="p-4 bg-gray-300 text-lg">
+            {{ props.user.name }}
+        </h2>
+        <div class="p-4 bg-white overflow-y-auto" id="chat-msg-container">
+            <div v-for="message in chatMessages" :key="message.id">
+                <div
+                    v-if="message.user_id === userId"
+                    class="flex flex-row-reverse items-center mb-2"
+                >
+                    <img
+                        :src="currentUser.avatar"
+                        alt="User Avatar"
+                        class="w-8 h-8 rounded-full mr-2"
+                    />
+                    <span class="bg-blue-500 text-white p-2 rounded-lg">{{
+                        message.content
+                    }}</span>
                 </div>
                 <div v-else class="flex flex-row items-center mb-2">
-                    <img src="friend-avatar.png" alt="Friend Avatar" class="w-8 h-8 rounded-full ml-2" />
-                    <span class="bg-gray-200 p-2 rounded-lg">{{ message.content }}</span>
+                    <img
+                        :src="props.user.avatar"
+                        alt="Friend Avatar"
+                        class="w-8 h-8 rounded-full ml-2"
+                    />
+                    <span class="bg-gray-200 p-2 rounded-lg">{{
+                        message.content
+                    }}</span>
                 </div>
             </div>
         </div>
         <div class="flex items-center">
-            <input v-model="message" @keyup.enter="sendMessage" class="p-4 bg-gray-100 w-full rounded-lg"
-                placeholder="Escribe un mensaje..." />
-            <button @click="sendMessage" class="bg-blue-500 text-white px-4 py-2 ml-2 rounded-lg hover:bg-blue-600">
+            <input
+                v-model="message"
+                @keyup.enter="sendMessage"
+                class="p-4 bg-gray-100 w-full rounded-lg"
+                placeholder="Escribe un mensaje..."
+            />
+            <button
+                @click="sendMessage"
+                class="bg-blue-500 text-white px-4 py-2 ml-2 rounded-lg hover:bg-blue-600"
+            >
                 Enviar
             </button>
         </div>
     </div>
 </template>
-  
-<script setup lang="ts">
-import axios from 'axios';
-import Echo from 'laravel-echo';
-import { ref, defineProps, onMounted } from 'vue';
 
-export interface User {
+<script setup lang="ts">
+import axios from "axios";
+import { ref, defineProps, onMounted, reactive, watch } from "vue";
+import { useAuthStore } from "@/stores/AuthStore";
+
+export interface ChatUser {
     id: number;
     name: string;
     status: string;
@@ -37,17 +61,34 @@ export interface User {
 }
 
 export interface Message {
-    chat_id: Number | null;
+    chat_id: number | null;
     content: string;
-    from: 'user' | 'friend';
+    user_id: number;
 }
 
-const props = defineProps<{
-    user: User,
-    chatId: Number | null
-}>()
+const userStore = useAuthStore();
+const currentUser = () => userStore.user;
+const userId = currentUser().id;
 
-const message = ref('');
+const props = defineProps<{
+    user: ChatUser;
+    chatId: number | null;
+}>();
+
+const message = ref("");
+const chatMessages = ref<Message[]>([]);
+
+function scrollToBottom() {
+    const chatContainer = document.getElementById("chat-msg-container");
+    if (chatContainer) {
+        const containerHeight = chatContainer.clientHeight;
+        const contentHeight =
+            chatContainer.scrollHeight -
+            parseInt(getComputedStyle(chatContainer).paddingTop) -
+            parseInt(getComputedStyle(chatContainer).paddingBottom);
+        chatContainer.scrollTop = contentHeight - containerHeight;
+    }
+}
 
 async function sendMessage(): Promise<void> {
     if (!message.value.trim()) {
@@ -57,31 +98,44 @@ async function sendMessage(): Promise<void> {
     const newMessage: Message = {
         chat_id: props.chatId,
         content: message.value,
-        from: 'user',
+        user_id: userId,
     };
 
-    await axios.post('/api/message/send', newMessage).then((res) => {
-        props.user.messages.push(newMessage);
-        message.value = '';
-    }).catch((err) => {
-        console.log(err)
-        message.value = '';
-    })
+    message.value = "";
+
+    chatMessages.value.push(newMessage);
+
+    scrollToBottom();
+
+    try {
+        await axios.post("/api/message/send", newMessage);
+    } catch (err) {
+        console.log(err);
+    }
 }
 
-onMounted(() => {
-    console.log('hola');
-    window.Echo.join(`chat.4`)
-        .here((users) => {
-            console.log(users);
-        })
-        .listen('MessageSent', (e: any) => {
-            console.log(e);
-        })
-})
+watch(
+    () => props.chatId,
+    async (newChatId) => {
+        if (newChatId) {
+            const chatChannel = `chat.${newChatId}`;
+            window.Echo.join(chatChannel)
+                .listen("MessageSent", (e: any) => {
+                    if (e.message.user_id !== userId) {
+                        chatMessages.value.push(e.message);
+                    }
+                });
 
+            await axios
+                .get(`api/chat/${newChatId}/get-messages`)
+                .then((res) => {
+                    chatMessages.value = res.data.messages;
+                });
+        }
+    }
+);
 </script>
-  
+
 <style scoped>
 /* ... */
 
@@ -97,5 +151,8 @@ button {
 button:hover {
     background-color: #2563eb;
 }
+
+#chat-msg-container {
+    height: 82vh;
+}
 </style>
-  
