@@ -13,6 +13,7 @@
             </div>
           </li>
         </ul>
+        <div><RouterLink to="/">Return Home</RouterLink></div>
       </div>
   
       <!-- Sala de chat -->
@@ -27,6 +28,7 @@
   
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import { RouterLink } from 'vue-router';
 import ChatRoom from './ChatRoom.vue';
 import axios from 'axios';
 

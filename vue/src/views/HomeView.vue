@@ -4,12 +4,12 @@
         <template v-if="currentUser()">
             <h2>Welcome {{ currentUser().name }}</h2>
             <RouterLink to="/register">Register</RouterLink>
-      <a href="javascript:void(0)" @click.prevent="handleLogout">Logout</a>
+            <a href="javascript:void(0)" @click.prevent="handleLogout">Logout</a>
+            <p>go to <RouterLink to="/messages">Messages</RouterLink></p>
         </template>
         <template v-else>
             <h2>Your are not logged in</h2>
-      <p>go to <RouterLink to="/login">Login</RouterLink> or <RouterLink to="/register">Register</RouterLink>
-            </p>
+            <p>go to <RouterLink to="/login">Login</RouterLink> or <RouterLink to="/register">Register</RouterLink></p>
         </template>
     </main>
 </template>
