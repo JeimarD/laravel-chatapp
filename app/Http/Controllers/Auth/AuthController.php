@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Events\LoggedIn;
+use App\Events\LogOut;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserLoginRequest;
 use App\Http\Requests\UserRegisterRequest;
@@ -9,7 +11,9 @@ use App\Models\User;
 use GuzzleHttp\Client as GuzzleHttpClient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Laravel\Passport\Client;
+use Predis\Client as PredisClient;
 
 class AuthController extends Controller
 {
@@ -26,9 +30,21 @@ class AuthController extends Controller
             'password' => $request->password,
             'scope' => '*',
         ];
-
+        
         $tokenRequest = Request::create('/oauth/token', 'post', $data);
-        return app()->handle($tokenRequest);
+        $response = app()->handle($tokenRequest);
+
+        if ($response->getStatusCode() == 200) {
+            // Get the user ID based on the email
+            $user = User::whereEmail($request->email)->first();
+            $userId = $user->id ?? null;
+    
+            $redis = new PredisClient();
+            $redis->sadd('connected:users', $userId);
+            broadcast(new LoggedIn($userId))->toOthers();
+        }
+
+        return $response;
     }
 
     public function register(UserRegisterRequest $request)
@@ -44,5 +60,13 @@ class AuthController extends Controller
         }
 
         return response()->json(["success" => true, "message" => 'Registration succeded']);
+    }
+
+    public function logout(Request $request)
+    {
+        $userId = $request->userId;
+        $redis = new PredisClient();
+        $redis->srem('connected:users', $userId);
+        broadcast(new LogOut($userId))->toOthers();
     }
 }

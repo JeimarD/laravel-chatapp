@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Broadcast;
 
 /*
@@ -20,5 +21,11 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 Broadcast::channel('chat.{chat_id}', function ($user, $chat_id) {
     if($user->chats->contains($chat_id)){
         return $user;
+    }
+});
+
+Broadcast::channel('connected-users', function($user) {
+    if(Auth::check()) {
+        return ['id' => $user->id, 'name' => $user->name];
     }
 });

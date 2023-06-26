@@ -5,11 +5,13 @@
             <h2>Welcome {{ currentUser().name }}</h2>
             <RouterLink to="/register">Register</RouterLink>
             <a href="javascript:void(0)" @click.prevent="handleLogout">Logout</a>
-            <p>go to <RouterLink to="/messages">Messages</RouterLink></p>
+            <p>go to <RouterLink to="/messages">Messages</RouterLink>
+            </p>
         </template>
         <template v-else>
             <h2>Your are not logged in</h2>
-            <p>go to <RouterLink to="/login">Login</RouterLink> or <RouterLink to="/register">Register</RouterLink></p>
+            <p>go to <RouterLink to="/login">Login</RouterLink> or <RouterLink to="/register">Register</RouterLink>
+            </p>
         </template>
     </main>
 </template>
@@ -33,9 +35,11 @@ const getUser = async () => {
 
 const currentUser = () => userStore.user;
 
-const handleLogout = () => {
-    userStore.logout();
-    route.push("/login");
+const handleLogout = async () => {
+    axios.post('/api/logout', { userId: currentUser().id }).then(() => {
+        userStore.logout();
+        route.push("/login");
+    });
 
 }
 

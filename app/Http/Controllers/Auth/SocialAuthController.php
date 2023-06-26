@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Events\LoggedIn;
 use App\Http\Controllers\Controller;
 use App\Models\SocialAccount;
 use App\Models\User;
@@ -9,6 +10,8 @@ use Illuminate\Http\Request;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Predis\Client as PredisClient;
 
 class SocialAuthController extends Controller
 {
@@ -56,6 +59,11 @@ class SocialAuthController extends Controller
         }
 
         $passportToken = $appUser->createToken('Auth token')->accessToken;
+
+        $userId = $appUser->id;
+        $redis = new PredisClient();
+        $redis->sadd('connected:users', $userId);
+        broadcast(new LoggedIn($userId))->toOthers();
 
         return response()->json([
             "Success" => true,

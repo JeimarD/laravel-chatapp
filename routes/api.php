@@ -31,8 +31,10 @@ Route::group(['middleware' => ['auth:api']], function ($router) {
     Route::get('/users', [UserController::class, 'index']);
     Route::post('message/send', [MessageController::class, 'sent']);
     Route::get('chat/{chat}/get-messages', [ChatController::class, 'getMessages']);
+    Route::post('logout', [AuthController::class, 'logout']);
 });
 
+Route::get('/users/online', [UserController::class, 'connected']);
 Route::post('login', [AuthController::class, 'login']);
 Route::post('register', [AuthController::class, 'register']);
 Route::get('/authorize/{provider}/redirect', [SocialAuthController::class, 'redirectToProvider'])->name('api.social.redirect');
