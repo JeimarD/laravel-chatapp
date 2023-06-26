@@ -10,7 +10,6 @@ use Illuminate\Http\Request;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use Predis\Client as PredisClient;
 
 class SocialAuthController extends Controller

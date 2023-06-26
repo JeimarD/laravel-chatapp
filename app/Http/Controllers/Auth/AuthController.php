@@ -11,7 +11,6 @@ use App\Models\User;
 use GuzzleHttp\Client as GuzzleHttpClient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use Laravel\Passport\Client;
 use Predis\Client as PredisClient;
 
