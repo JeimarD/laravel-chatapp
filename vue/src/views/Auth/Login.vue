@@ -1,7 +1,7 @@
 <template>
     <div class="flex h-screen">
         <div class="w-4/6 bg-white p-8">
-            <img src="../assets/chat2.png" alt="Logo" class="h-8">
+            <img src="/logo.png" alt="Logo" class="h-8">
             <div class="flex flex-col justify-center login-container">
                 <div class="flex justify-center items-center">
                     <h1 class="text-4xl mt-4">Login to Your Account</h1>

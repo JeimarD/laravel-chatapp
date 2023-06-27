@@ -4,7 +4,6 @@
         <template v-if="currentUser()">
             <h2>Welcome {{ currentUser().name }}</h2>
             <RouterLink to="/register">Register</RouterLink>
-            <a href="javascript:void(0)" @click.prevent="handleLogout">Logout</a>
             <p>go to <RouterLink to="/messages">Messages</RouterLink>
             </p>
         </template>
@@ -18,30 +17,19 @@
 
 <script setup lang="ts">
 import { RouterLink } from "vue-router";
-import { useAuthStore } from "@/stores/AuthStore";
 import axios from "axios";
 import { onMounted } from "vue";
-import { useRouter } from "vue-router";
-
-const route = useRouter();
+import { useAuthStore } from "@/stores/AuthStore";
 
 const userStore = useAuthStore();
+const currentUser = () => userStore.user;
+
 
 const getUser = async () => {
     await axios.get("api/user").then((res) => {
         console.log(res);
     });
 };
-
-const currentUser = () => userStore.user;
-
-const handleLogout = async () => {
-    axios.post('/api/logout', { userId: currentUser().id }).then(() => {
-        userStore.logout();
-        route.push("/login");
-    });
-
-}
 
 onMounted(() => {
     getUser();
