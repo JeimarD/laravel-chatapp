@@ -20,7 +20,7 @@
 
     <!-- Sala de chat -->
     <div class="w-3/4">
-      <ChatRoom v-if="selectedUser" :user="selectedUser" :chatId="chatId" />
+      <ChatRoom v-if="selectedUser" :user="selectedUser" :chatId="chatId" :isConnected="isConnected(selectedUser.id)"/>
       <div v-else class="h-full flex items-center justify-center">
         <p>Selecciona un usuario para comenzar el chat.</p>
       </div>

@@ -1,29 +1,20 @@
 <template>
     <div>
-        <h2 class="p-4 bg-gray-300 text-lg">
-            {{ props.user.name }}
-        </h2>
+        <div>
+            <h2 class="p-4 bg-gray-300 text-lg flex">
+                <span class="flex align-items-center items-center gap-x-4">{{ props.user.name }} <div v-if="props.isConnected" class="ml-auto h-2 w-2 bg-green-500 rounded-full"></div></span>
+            </h2>
+        </div>
         <div class="p-4 bg-white overflow-y-auto" id="chat-msg-container">
             <div v-for="message in chatMessages" :key="message.id">
-                <div
-                    v-if="message.user_id === userId"
-                    class="flex flex-row-reverse items-center mb-2"
-                >
-                    <img
-                        :src="currentUser.avatar"
-                        alt="User Avatar"
-                        class="w-8 h-8 rounded-full mr-2"
-                    />
+                <div v-if="message.user_id === userId" class="flex flex-row-reverse items-center mb-2">
+                    <img :src="currentUser.avatar" alt="User Avatar" class="w-8 h-8 rounded-full mr-2" />
                     <span class="bg-blue-500 text-white p-2 rounded-lg">{{
                         message.content
                     }}</span>
                 </div>
                 <div v-else class="flex flex-row items-center mb-2">
-                    <img
-                        :src="props.user.avatar"
-                        alt="Friend Avatar"
-                        class="w-8 h-8 rounded-full ml-2"
-                    />
+                    <img :src="props.user.avatar" alt="Friend Avatar" class="w-8 h-8 rounded-full ml-2" />
                     <span class="bg-gray-200 p-2 rounded-lg">{{
                         message.content
                     }}</span>
@@ -31,16 +22,9 @@
             </div>
         </div>
         <div class="flex items-center">
-            <input
-                v-model="message"
-                @keyup.enter="sendMessage"
-                class="p-4 bg-gray-100 w-full rounded-lg"
-                placeholder="Escribe un mensaje..."
-            />
-            <button
-                @click="sendMessage"
-                class="bg-blue-500 text-white px-4 py-2 ml-2 rounded-lg hover:bg-blue-600"
-            >
+            <input v-model="message" @keyup.enter="sendMessage" class="p-4 bg-gray-100 w-full rounded-lg"
+                placeholder="Escribe un mensaje..." />
+            <button @click="sendMessage" class="bg-blue-500 text-white px-4 py-2 ml-2 rounded-lg hover:bg-blue-600">
                 Enviar
             </button>
         </div>
@@ -73,6 +57,7 @@ const userId = currentUser().id;
 const props = defineProps<{
     user: ChatUser;
     chatId: number | null;
+    isConnected: Boolean;
 }>();
 
 const message = ref("");
